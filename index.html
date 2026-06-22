@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#f8f7f4">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>Travel Expense</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%231a1a1a' rx='20' width='100' height='100'/><text x='50' y='58' text-anchor='middle' fill='white' font-size='40' font-family='sans-serif' font-weight='700'>TE</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <header class="header">
+      <div class="header-top">
+        <h1>Travel Expense</h1>
+        <span class="trip-dates">06.24 — 07.01</span>
+      </div>
+      <div class="budget-bar">
+        <div class="budget-info">
+          <span class="budget-spent" id="budgetSpent">NT$ 0</span>
+        </div>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="add">Record</button>
+      <button class="tab" data-tab="list">List</button>
+      <button class="tab" data-tab="stats">Stats</button>
+      <button class="tab" data-tab="settings">Settings</button>
+    </nav>
+
+    <!-- Add -->
+    <section class="view active" id="view-add">
+      <div class="quick-amount">
+        <input type="number" id="inputAmount" placeholder="0" inputmode="decimal" autofocus>
+        <div class="currency-toggle" id="currencyToggle">
+          <button class="currency-btn active" data-currency="JPY">JPY</button>
+          <button class="currency-btn" data-currency="TWD">TWD</button>
+        </div>
+        <div class="conversion-hint" id="conversionHint"></div>
+      </div>
+
+      <div class="member-toggle" id="memberToggle">
+        <button class="member-btn active" data-member="dad">爸爸</button>
+        <button class="member-btn" data-member="mom">媽媽</button>
+        <button class="member-btn" data-member="sis">姐姐</button>
+        <button class="member-btn" data-member="bro">弟弟</button>
+      </div>
+
+      <div class="category-grid">
+        <button class="cat-btn active" data-cat="food">
+          <span class="cat-icon">F</span><span class="cat-label">餐飲</span>
+        </button>
+        <button class="cat-btn" data-cat="transport">
+          <span class="cat-icon">T</span><span class="cat-label">交通</span>
+        </button>
+        <button class="cat-btn" data-cat="stay">
+          <span class="cat-icon">S</span><span class="cat-label">住宿</span>
+        </button>
+        <button class="cat-btn" data-cat="shopping">
+          <span class="cat-icon">B</span><span class="cat-label">購物</span>
+        </button>
+        <button class="cat-btn" data-cat="ticket">
+          <span class="cat-icon">A</span><span class="cat-label">門票</span>
+        </button>
+        <button class="cat-btn" data-cat="other">
+          <span class="cat-icon">O</span><span class="cat-label">其他</span>
+        </button>
+      </div>
+
+      <div class="pay-toggle" id="payToggle">
+        <button class="pay-btn active" data-pay="cash">現金</button>
+        <button class="pay-btn" data-pay="card">信用卡</button>
+      </div>
+
+      <div class="photo-row">
+        <input type="file" id="inputPhoto" accept="image/*" capture="environment" hidden>
+        <button class="btn-photo" id="btnPhoto">拍照 / 選圖</button>
+        <div class="photo-preview" id="photoPreview"></div>
+      </div>
+
+      <div class="note-row">
+        <input type="text" id="inputNote" placeholder="備註" autocomplete="off">
+        <input type="date" id="inputDate">
+      </div>
+
+      <button class="btn-add" id="btnAdd">記一筆</button>
+    </section>
+
+    <!-- List -->
+    <section class="view" id="view-list">
+      <div class="day-nav">
+        <button class="day-arrow" id="dayPrev">‹</button>
+        <span class="day-label" id="dayLabel"></span>
+        <button class="day-arrow" id="dayNext">›</button>
+        <button class="day-all" id="dayAll">ALL</button>
+      </div>
+      <div class="day-total" id="dayTotal"></div>
+      <div class="expense-list" id="expenseList"></div>
+      <div class="empty-state" id="emptyState">
+        <span></span>
+        <p>尚無記錄</p>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="view" id="view-stats">
+      <div class="stats-cards">
+        <div class="stat-card">
+          <div class="stat-label">Total TWD</div>
+          <div class="stat-value" id="statTotalTWD">NT$ 0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total JPY</div>
+          <div class="stat-value" id="statTotalJPY">¥ 0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Daily Avg</div>
+          <div class="stat-value" id="statDailyAvg">NT$ 0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Entries</div>
+          <div class="stat-value" id="statCount">0</div>
+        </div>
+      </div>
+      <h3 class="section-title">By Payment</h3>
+      <div class="category-bars" id="payBars"></div>
+      <h3 class="section-title">By Member</h3>
+      <div class="category-bars" id="memberBars"></div>
+      <div class="pie-section">
+        <div class="pie-chart" id="memberPie"></div>
+        <div class="pie-legend" id="memberLegend"></div>
+      </div>
+      <h3 class="section-title">By Category</h3>
+      <div class="category-bars" id="categoryBars"></div>
+      <h3 class="section-title">Daily Trend</h3>
+      <div class="daily-chart" id="dailyChart"></div>
+      <button class="btn-export" id="btnExport">Export CSV</button>
+    </section>
+
+    <!-- Settings -->
+    <section class="view" id="view-settings">
+      <div class="setting-group">
+        <label>匯率 (1 JPY = ? TWD)</label>
+        <input type="number" id="setRate" step="0.001" placeholder="0.220">
+        <p class="setting-hint" id="rateHint">每日自動抓取，亦可手動覆蓋</p>
+        <button class="btn-refresh-rate" id="btnRefreshRate">更新匯率</button>
+      </div>
+      <div class="setting-group">
+        <label>旅行日期</label>
+        <div class="date-range">
+          <input type="date" id="setStart">
+          <span>—</span>
+          <input type="date" id="setEnd">
+        </div>
+      </div>
+      <button class="btn-save" id="btnSaveSettings">儲存設定</button>
+      <hr class="divider">
+      <div class="danger-zone">
+        <button class="btn-danger" id="btnClearData">清除所有資料</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- Edit Modal -->
+  <div class="modal-overlay" id="editModal">
+    <div class="modal">
+      <h3>編輯</h3>
+      <div class="modal-body">
+        <input type="number" id="editAmount" placeholder="金額" inputmode="decimal">
+        <div class="currency-toggle">
+          <button class="currency-btn" data-edit-currency="JPY">JPY</button>
+          <button class="currency-btn" data-edit-currency="TWD">TWD</button>
+        </div>
+        <div class="member-toggle" id="editMemberToggle">
+          <button class="member-btn" data-edit-member="dad">爸爸</button>
+          <button class="member-btn" data-edit-member="mom">媽媽</button>
+          <button class="member-btn" data-edit-member="sis">姐姐</button>
+          <button class="member-btn" data-edit-member="bro">弟弟</button>
+        </div>
+        <div class="pay-toggle" id="editPayToggle">
+          <button class="pay-btn" data-edit-pay="cash">現金</button>
+          <button class="pay-btn" data-edit-pay="card">信用卡</button>
+        </div>
+        <div class="category-grid modal-cats">
+          <button class="cat-btn" data-edit-cat="food"><span class="cat-icon">F</span></button>
+          <button class="cat-btn" data-edit-cat="transport"><span class="cat-icon">T</span></button>
+          <button class="cat-btn" data-edit-cat="stay"><span class="cat-icon">S</span></button>
+          <button class="cat-btn" data-edit-cat="shopping"><span class="cat-icon">B</span></button>
+          <button class="cat-btn" data-edit-cat="ticket"><span class="cat-icon">A</span></button>
+          <button class="cat-btn" data-edit-cat="other"><span class="cat-icon">O</span></button>
+        </div>
+        <div class="photo-row">
+          <input type="file" id="editPhoto" accept="image/*" capture="environment" hidden>
+          <button class="btn-photo" id="btnEditPhoto">拍照 / 選圖</button>
+          <div class="photo-preview" id="editPhotoPreview"></div>
+        </div>
+        <input type="text" id="editNote" placeholder="備註">
+        <input type="date" id="editDate">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="editCancel">取消</button>
+        <button class="btn-confirm" id="editConfirm">儲存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Photo Viewer -->
+  <div class="modal-overlay" id="photoViewer">
+    <img class="photo-full" id="photoFull" src="" alt="">
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
