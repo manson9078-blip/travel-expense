@@ -707,14 +707,6 @@
       toast('設定已儲存');
     });
 
-    $('#btnClearData').addEventListener('click', () => {
-      if (!confirm('確定清除所有記帳資料？無法復原。')) return;
-      expenses = [];
-      saveExpenses();
-      updateBudget();
-      renderList();
-      toast('已清除');
-    });
   }
 
   if ('serviceWorker' in navigator) {
