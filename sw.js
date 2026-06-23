@@ -1,10 +1,14 @@
-const CACHE_NAME = 'travel-expense-v4';
+const CACHE_NAME = 'travel-expense-v5';
 const ASSETS = [
   './',
   './index.html',
   './style.css',
   './app.js',
   './manifest.json',
+  './img/cash.jpg',
+  './img/ana.jpg',
+  './img/yoshika.jpg',
+  './img/cube.jpg',
 ];
 
 self.addEventListener('install', (e) => {
