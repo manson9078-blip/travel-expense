@@ -256,6 +256,8 @@ body {
 .pay-toggle { margin-bottom: 16px; }
 
 .pay-img {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
 
@@ -263,7 +265,8 @@ body {
   padding: 0;
   overflow: hidden;
   border-radius: 10px;
-  height: 52px;
+  aspect-ratio: 1.586 / 1;
+  height: auto;
   background: var(--glass);
 }
 
@@ -272,19 +275,21 @@ body {
   height: 100%;
   object-fit: cover;
   display: block;
-  opacity: 0.5;
-  transition: opacity 0.3s;
+  opacity: 0.45;
+  filter: grayscale(0.3);
+  transition: all 0.3s;
 }
 
 .pay-img .pay-btn.active {
   border-color: var(--accent);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
-  transform: translateY(-1px);
+  box-shadow: 0 3px 16px rgba(0,0,0,0.12);
+  transform: translateY(-2px);
   background: none;
 }
 
 .pay-img .pay-btn.active img {
   opacity: 1;
+  filter: none;
 }
 
 /* Category Grid */
