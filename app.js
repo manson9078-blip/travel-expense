@@ -19,7 +19,8 @@
 
   const PAYS = {
     cash: { name: '現金', color: '#444' },
-    card: { name: '信用卡', color: '#888' },
+    ana: { name: '中信ANA', color: '#777' },
+    yoshika: { name: '吉鶴卡', color: '#aaa' },
   };
 
   const WEEKDAYS = ['日', '一', '二', '三', '四', '五', '六'];

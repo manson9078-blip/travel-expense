@@ -1,4 +1,4 @@
-const CACHE_NAME = 'travel-expense-v2';
+const CACHE_NAME = 'travel-expense-v3';
 const ASSETS = [
   './',
   './index.html',
