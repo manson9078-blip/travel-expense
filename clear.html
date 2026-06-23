@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>清除快取</title></head>
+<body style="font-family:sans-serif;text-align:center;padding:60px 20px;">
+<h2>清除快取中...</h2>
+<p id="msg">請稍候</p>
+<script>
+(async () => {
+  const msg = document.getElementById('msg');
+  try {
+    const regs = await navigator.serviceWorker.getRegistrations();
+    for (const r of regs) await r.unregister();
+    const keys = await caches.keys();
+    for (const k of keys) await caches.delete(k);
+    msg.textContent = '已清除！3 秒後跳轉...';
+    setTimeout(() => location.href = './', 3000);
+  } catch(e) {
+    msg.textContent = '清除完成，請手動回首頁';
+  }
+})();
+</script>
+</body></html>
