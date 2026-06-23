@@ -32,6 +32,52 @@
     tripEnd: '2026-07-01',
   };
 
+  // Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyB3DlIpUitZ3UnpBiUsUNIWPCUaQ1yChP0",
+    authDomain: "japan-dbeb6.firebaseapp.com",
+    databaseURL: "https://japan-dbeb6-default-rtdb.firebaseio.com",
+    projectId: "japan-dbeb6",
+    storageBucket: "japan-dbeb6.firebasestorage.app",
+    messagingSenderId: "846786160833",
+    appId: "1:846786160833:web:1a95b07dcb8e8210d14c40",
+  };
+
+  let db = null;
+  try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+  } catch (e) {
+    console.warn('Firebase init failed, offline only');
+  }
+
+  function syncToFirebase() {
+    if (!db) return;
+    const data = expenses.map(e => {
+      const copy = { ...e };
+      delete copy.photo;
+      return copy;
+    });
+    db.ref('expenses').set(data).catch(() => {});
+  }
+
+  function listenFirebase() {
+    if (!db) return;
+    db.ref('expenses').on('value', (snap) => {
+      const remote = snap.val();
+      if (!remote) return;
+      const arr = Array.isArray(remote) ? remote : Object.values(remote);
+      arr.forEach(r => {
+        const local = expenses.find(e => e.id === r.id);
+        if (local && local.photo) r.photo = local.photo;
+      });
+      expenses = arr;
+      saveExpenses();
+      updateBudget();
+      renderList();
+    });
+  }
+
   let settings = loadJSON('te_settings', defaultSettings);
   let expenses = loadJSON('te_expenses', []);
   let currentDay = null;
@@ -83,7 +129,10 @@
     catch { return fallback; }
   }
 
-  function saveExpenses() { localStorage.setItem('te_expenses', JSON.stringify(expenses)); }
+  function saveExpenses() {
+    localStorage.setItem('te_expenses', JSON.stringify(expenses));
+    syncToFirebase();
+  }
   function saveSettings() { localStorage.setItem('te_settings', JSON.stringify(settings)); }
 
   function toTWD(amount, currency) {
@@ -163,6 +212,7 @@
     updateBudget();
     renderList();
     fetchRate();
+    listenFirebase();
   }
 
   function initDate() {
