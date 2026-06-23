@@ -257,16 +257,17 @@ body {
 
 .pay-img {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
 }
 
 .pay-img .pay-btn {
   padding: 0;
   overflow: hidden;
-  border-radius: 10px;
+  border-radius: 8px;
   aspect-ratio: 1.586 / 1;
   height: auto;
+  max-height: 60px;
   background: var(--glass);
 }
 
